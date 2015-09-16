@@ -11,8 +11,9 @@ class MoviesController < ApplicationController
   end
 
   def index
+    @all_ratings = Movie.All_Ratings
+
     id = params[:sort]
-    
     if id == "title"
        @movies = Movie.order("title").all
        @title_header = "hilite"
@@ -20,9 +21,19 @@ class MoviesController < ApplicationController
         @movies = Movie.order("release_date").all
         @release_date_header = "hilite"
     else   
-      @movies = Movie.all
-    end
-  
+      if params[:ratings]
+        @checked = []
+        
+        params[:ratings].each do |a,b|
+          @checked += [a]
+        end
+      
+      else
+        @checked = @all_ratings
+      end
+      
+      @movies = Movie.where("rating IN (?)", @checked)
+    end 
   end
 
   def new
